@@ -1,0 +1,169 @@
+{% extends 'home.html' %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oil Spill Detection Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://media.istockphoto.com/id/986709362/photo/scientists-are-taking-samples-of-water-resources.jpg?s=612x612&w=0&k=20&c=-KIcHLh0kqsXuMo3xcNt2R4YjUtkPGOejSwsWoWO8TA=');
+            background-repeat: no-repeat;
+            background-size: cover;  /* Ensures the image covers the full page */
+            background-position: center;  /* Centers the background image */
+            height: 100vh;  /* Sets the height to 100% of the viewport height */
+            margin: 0;  /* Removes default body margin */
+        }    
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        h3 {
+            color: #3498db;
+            text-align: center;
+        }
+        .form-container {
+           
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: lightcyan;
+        }
+        .form-group {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .form-field {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            color: #2c3e50;
+        }
+        input[type="range"] {
+            width: 100%;
+        }
+        .slider-value {
+            text-align: center;
+            font-size: 16px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .result {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <br>
+    <h1>Oil Spill Detection Prediction</h1>
+    <br>
+    <div class="form-container">
+        {% if prediction_text %}
+        <div class="mt-4">
+            <h3 class="text-center">Predicted Result :</h3>
+            <h1 style="color: green;">{{ prediction_text }}</h1>
+        </div>
+        {% endif %}
+    
+        <h3>Enter the following feature values :</h3>
+        <br>
+        <form action="/predict" method="POST">
+            <div class="form-group">
+                <div class="form-field">
+                    <label for="blue_band_reflectance">Feature 1 </label>
+                    <input type="range" id="blue_band_reflectance" name="blue_band_reflectance" min="0.02" max="0.74" step="0.01" value="-0.71" oninput="updateValue(this)">
+                    <div class="slider-value" id="blue_band_reflectance_value">0.0</div>
+                </div>
+                <div class="form-field">
+                    <label for="smoothness_entropy">Feature 2 </label>
+                    <input type="range" id="smoothness_entropy" name="smoothness_entropy" min="0.01" max="0.65" step="0.01" value="-0.71" oninput="updateValue(this)">
+                    <div class="slider-value" id="smoothness_entropy_value">0.0</div>
+                </div>
+                <div class="form-field">
+                    <label for="green_band_reflectance">Feature 3 </label>
+                    <input type="range" id="green_band_reflectance" name="green_band_reflectance" min="0.02" max="0.65" step="0.01" value="-0.71" oninput="updateValue(this)">
+                    <div class="slider-value" id="green_band_reflectance_value">0.0</div>
+                </div>
+                <div class="form-field">
+                    <label for="red_band_reflectance">Feature 4 </label>
+                    <input type="range" id="red_band_reflectance" name="red_band_reflectance" min="0.02" max="0.77" step="0.01" value="-0.71" oninput="updateValue(this)">
+                    <div class="slider-value" id="red_band_reflectance_value">0.0</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-field">
+                    <label for="contrast_homogeneity">Feature 5 </label>
+                    <input type="range" id="contrast_homogeneity" name="contrast_homogeneity" min="47.66" max="126.08" step="0.01" value="-0.71" oninput="updateValue(this)">
+                    <div class="slider-value" id="contrast_homogeneity_value">0.0</div>
+                </div>
+                <div class="form-field">
+                    <label for="detected_object_area">Feature 6</label>
+                    <input type="range" id="detected_object_area" name="detected_object_area" min="132.78" max="2036.80" step="1" value="-0.71" oninput="updateValue(this)">
+                    <div class="slider-value" id="detected_object_area_value">0.0</div>
+                </div>
+                <div class="form-field">
+                    <label for="latitude">Feature 7 </label>
+                    <input type="range" id="latitude" name="latitude" min="-0.71" max="1.83" step="0.01" value="-0.71" oninput="updateValue(this)">
+                    <div class="slider-value" id="latitude_value">0.0</div>
+                </div>
+                <div class="form-field">
+                    <label for="compactness_roundness">Feature 8 </label>
+                    <input type="range" id="compactness_roundness" name="compactness_roundness" min="2.96" max="14.78" step="0.01" value="-0.71" oninput="updateValue(this)">
+                    <div class="slider-value" id="compactness_roundness_value">0.0</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-field">
+                    <label for="edge_detection">Feature 9 </label>
+                    <input type="range" id="edge_detection" name="edge_detection" min="0.00" max="2.98" step="0.01" value="-0.71" oninput="updateValue(this)">
+                    <div class="slider-value" id="edge_detection_value">0.0</div>
+                </div>
+                <div class="form-field">
+                    <label for="sar_backscatter">Feature 10 </label>
+                    <input type="range" id="sar_backscatter" name="sar_backscatter" min="35.95" max="66.45" step="0.01" value="-0.71" oninput="updateValue(this)">
+                    <div class="slider-value" id="sar_backscatter_value">0.0</div>
+                </div>
+            </div>
+            <button type="submit">Predict Ocean Spill or Not</button>
+        </form>
+        <div class="result" id="prediction_result"></div>
+    </div>
+
+    <script>
+        function updateValue(slider) {
+            var value = slider.value;
+            document.getElementById(slider.id + '_value').innerText = value;
+        }
+    </script>
+
+</body>
+</html>
+
+{% endblock %}
